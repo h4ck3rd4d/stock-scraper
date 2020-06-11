@@ -58,41 +58,23 @@ counter = 7 # used to count through myElems[], starts at 7 to not include curren
 
 dataKeys = ["Date","Open","High","Low","Close","Volume"] # key values for data
 
-
-## nested for loop to add all stock info to data[]
-##for i in range(DATE_RANGE):
-##    column = {} # dictionary that will combine keys from dataKeys with values from dataValues(below)
-##    dataValues = []
-##    for j in range(7): # there are 7 fields in table (date, open, high, low, close, adj. close, volume)
-##        if j == 5: # we don't need the adj. close data
-##            counter += 1
-##            
-##        else:
-##            if i > 0 and myElems[counter].text.strip() == data[i-1]['Date']:
-##                counter += 2
-##                j = 0         
-##            else:
-##                dataValues.append(myElems[counter].text.strip()) #strips html and only appends the actual text
-##                counter += 1
-##        
-##    data.append(dict(zip(dataKeys, dataValues))) #combine the keys(dataKeys) and values(dataValues) and appends to data[]
-
+# Adds web table data to data[]
 for i in range(DATE_RANGE):
     column = []
     for j in range(7):
-        if j == 5:
+        if j == 5: # skips over adjusted close data as not desired info
             counter += 1
-        elif myElems[counter].text.strip() == 'Dividend':
+        elif myElems[counter].text.strip() == 'Dividend': #if a stock has a dividend this handles filling out the list for readability
             column.append(myElems[counter].text.strip())
-
             data.append(column)
             counter += 1
             break
         else:
-            column.append(myElems[counter].text.strip())
+            column.append(myElems[counter].text.strip()) # Adds web data to column
             counter += 1
             
     data.append(column)
+    
 # output collected data to csv file
 
 import csv
@@ -104,6 +86,8 @@ outputFile = open(os.path.join(path,fileName), 'w', newline='')
 outputDictWriter = csv.DictWriter(outputFile, dataKeys)
 outputDictWriter.writeheader()
 outputCsvWriter = csv.writer(outputFile)
+
+# for loop to skip dividend info from data[] to not save into csv
 for row in data:
     if 'Dividend' in row:
         continue
